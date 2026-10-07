@@ -126,13 +126,15 @@ lib/
 ├── main.dart                         ✅
 ├── app.dart                          ✅
 ├── core/
-│   ├── constants/api_constants.dart  🔲
-│   ├── errors/failures.dart          🔲
+│   ├── constants/api_constants.dart  ✅
+│   ├── errors/failures.dart          ✅
 │   ├── router/app_router.dart        🔲
 │   ├── theme/app_theme.dart          🔲
-│   ├── network/  (dio_client 🔲, connectivity_provider ✅)
+│   ├── network/  (dio_client ✅, connectivity_provider ✅)
 │   ├── database/app_database.dart    ✅
-│   └── sync/     (sync_service ✅, sync_provider 🔲)
+│   ├── di/interventions_providers.dart ✅
+│   ├── utils/id_generator.dart       ✅
+│   └── sync/     (sync_service ✅, sync_provider ✅)
 ├── features/
 │   ├── auth/           data · domain · presentation
 │   ├── dashboard/      presentation
@@ -158,15 +160,17 @@ lib/
 
 | Fichier | Lot | Rôle |
 |---|---|---|
-| 🔲 `constants/api_constants.dart` | L1 | `baseUrl` (`http://10.0.2.2:3000`) et chemins `/users`, `/interventions`. |
-| 🔲 `errors/failures.dart` | L1 | Erreurs métier (réseau, authentification, base locale) pour ne pas faire remonter d'exceptions brutes à l'écran. |
+| ✅ `constants/api_constants.dart` | L1 | `baseUrl` (`http://10.0.2.2:3000`) et chemins `/users`, `/interventions`. |
+| ✅ `errors/failures.dart` | L1 | Erreurs métier (réseau, authentification, base locale) pour ne pas faire remonter d'exceptions brutes à l'écran. |
 | 🔲 `router/app_router.dart` | L1 | Routes `go_router` : `/login`, `/dashboard`, `/interventions`, `/interventions/new`, `/interventions/:id`, `/map`, `/profile`. Renvoie vers `/login` s'il n'y a pas de session. |
 | 🔲 `theme/app_theme.dart` | L1 | Thème Material 3 : bleu marine de la maquette, couleurs des statuts (en attente, en cours, terminée) et des priorités (normale, élevée, urgente). |
-| 🔲 `network/dio_client.dart` | L1 | Crée l'instance `Dio` avec la `baseUrl` et un intercepteur qui ajoute `Authorization: Bearer <token>`. Utilisée par les sources distantes et par `SyncService`. |
+| ✅ `network/dio_client.dart` | L1 | Crée l'instance `Dio` avec la `baseUrl` et un intercepteur qui ajoute `Authorization: Bearer <token>`. Utilisée par les sources distantes et par `SyncService`. |
 | ✅ `network/connectivity_provider.dart` | L1 | `connectivityProvider` (instance `Connectivity`) et `isOnlineProvider` (flux `true` / `false`). Alimente le badge En ligne / Hors ligne. |
 | ✅ `database/app_database.dart` | L2 | Ouvre SQLite et crée 2 tables. `interventions` : toutes les données d'une mission, avec `technician_id`, plus `synced` (0 = modification pas encore envoyée). `sync_queue` : une ligne par opération à rejouer (`entity_id`, `operation` = `create` ou `update`, `payload` JSON, `retry_count`). `clearUserData()` vide les deux tables à la déconnexion. |
 | ✅ `sync/sync_service.dart` | L2 | Moteur de synchro. `start()` écoute `connectivity_plus`. `processQueue()` lit `sync_queue` dans l'ordre : `create` → `POST /interventions`, `update` → `PATCH /interventions/:id`. Succès : ligne supprimée et `synced = 1`. Erreur réseau : `retry_count + 1` et arrêt pour garder l'ordre. `pendingCount()` donne le nombre d'éléments en attente. `stateStream` publie `idle`, `syncing` ou `error` pour le badge et le bouton Synchroniser. |
-| 🔲 `sync/sync_provider.dart` | L2 | Providers Riverpod : crée `SyncService` et le démarre au lancement, expose l'état de synchro et le nombre d'éléments en attente. |
+| ✅ `di/interventions_providers.dart` | L2 | Racine de composition : branche le dépôt sur les cas d'usage. L'interrupteur `useFakeRepository` (true au départ) choisit le dépôt en mémoire ou le vrai dépôt SQLite. L1 et L3 utilisent ces providers sans rien changer quand L2 bascule. |
+| ✅ `utils/id_generator.dart` | L2 | `generateId()` : identifiant créé sur le téléphone pour une création hors ligne. |
+| ✅ `sync/sync_provider.dart` | L2 | Providers Riverpod : crée `SyncService` et le démarre au lancement, expose l'état de synchro et le nombre d'éléments en attente. |
 
 ### features/auth/ : connexion, session, profil
 
@@ -198,9 +202,9 @@ lib/
 | ✅ `usecases/get_interventions.dart` | L2 | Filtre par statut, recherche texte, tri par priorité (urgente d'abord, puis date) ou par date. Alimente la liste. |
 | ✅ `usecases/get_dashboard_stats.dart` | L2 | Calcule les chiffres du tableau de bord : à faire, en cours, terminées, prioritaires, urgentes, nombre et durée des interventions du jour. |
 | ✅ `usecases/update_intervention_status.dart` | L2 | Règle métier : seul le statut suivant est permis (en attente → en cours → terminée). Lève une erreur sinon. |
-| 🔲 `usecases/create_intervention.dart` | L2 | Crée une intervention pour le technicien connecté, avec un identifiant généré sur le téléphone (écrite en local, mise dans la file en `create`). |
+| ✅ `usecases/create_intervention.dart` | L2 | Crée une intervention pour le technicien connecté, avec un identifiant généré sur le téléphone (écrite en local, mise dans la file en `create`). |
 | 🔲 `usecases/save_field_work.dart` | L3 | Enregistre notes, photos et signature d'une intervention. |
-| 🔲 `usecases/refresh_interventions.dart` | L2 | Télécharge depuis le serveur les interventions du technicien connecté quand on est en ligne. |
+| ✅ `usecases/refresh_interventions.dart` | L2 | Télécharge depuis le serveur les interventions du technicien connecté quand on est en ligne. |
 | 🔲 `usecases/schedule_reminder.dart` | L3 | Programme un rappel avant l'heure prévue d'une intervention. |
 | 🔲 `services/reminder_scheduler.dart` | L3 | Interface du domaine pour programmer une notification (le domaine ne connaît pas le plugin). |
 
@@ -208,12 +212,13 @@ lib/
 
 | Fichier | Lot | Rôle |
 |---|---|---|
-| 🔲 `models/intervention_model.dart` | L2 | Version « données » : `fromJson` / `toJson` pour l'API, `fromMap` / `toMap` pour SQLite. |
-| 🔲 `mappers/intervention_mapper.dart` | L2 | Convertit `InterventionModel` ↔ `Intervention` (statuts et priorités en entiers ↔ enums, liste de photos ↔ JSON). |
-| 🔲 `datasources/intervention_local_datasource.dart` | L2 | Requêtes SQLite : lire, insérer, modifier, et **ajouter une ligne dans `sync_queue`** à chaque création ou modification. |
-| 🔲 `datasources/intervention_remote_datasource.dart` | L2 | Appels REST : `GET /interventions?technicianId=<id>` pour le téléchargement. |
-| 🔲 `repositories/intervention_repository_impl.dart` | L2 | Implémente le contrat : écrit toujours en local d'abord (`synced = 0` + file d'attente), puis laisse `SyncService` envoyer. |
-| 🔲 `repositories/fake_intervention_repository.dart` | L2 | Version en mémoire pour que L1 et L3 construisent leurs écrans sans attendre SQLite. À livrer dès le premier jour. |
+| ✅ `models/intervention_model.dart` | L2 | Version « données » : `fromJson` / `toJson` pour l'API, `fromMap` / `toMap` pour SQLite. |
+| ✅ `mappers/intervention_mapper.dart` | L2 | Convertit `InterventionModel` ↔ `Intervention` (statuts et priorités en entiers ↔ enums, liste de photos ↔ JSON). |
+| ✅ `datasources/intervention_local_datasource.dart` | L2 | Requêtes SQLite : lire, insérer, modifier, et **ajouter une ligne dans `sync_queue`** à chaque création ou modification. |
+| ✅ `datasources/intervention_remote_datasource.dart` | L2 | Appels REST : `GET /interventions?technicianId=<id>` pour le téléchargement. |
+| ✅ `repositories/intervention_repository_impl.dart` | L2 | Implémente le contrat : écrit toujours en local d'abord (`synced = 0` + file d'attente), puis laisse `SyncService` envoyer. |
+| ✅ `repositories/fake_intervention_repository.dart` | L2 | Version en mémoire (données de `seed_interventions.dart`, filtrées par technicien) pour que L1 et L3 construisent leurs écrans sans attendre SQLite. **Livrée.**
+| ✅ `repositories/seed_interventions.dart` | L2 | Interventions de démonstration utilisées par le dépôt factice. |
 | 🔲 `services/local_notification_scheduler.dart` | L3 | Implémente `ReminderScheduler` avec `flutter_local_notifications`. |
 
 **presentation/**
@@ -272,8 +277,9 @@ Il réutilise les cas d'usage de `interventions` : pas de couches `data` ni `dom
 | ✅ `helpers/intervention_fixture.dart` | L2 | `makeIntervention(...)` : fabrique une intervention de test avec des valeurs par défaut. |
 | ✅ `update_intervention_status_test.dart` | L2 | La transition autorisée passe, le saut de statut est refusé (repository simulé avec `mocktail`). |
 | ✅ `get_dashboard_stats_test.dart` | L2 | Les chiffres du tableau de bord (statuts, prioritaires, durée du jour) sont corrects. |
-| 🔲 `get_interventions_test.dart` | L2 | Filtre, recherche et tri. |
-| 🔲 `intervention_mapper_test.dart` | L2 | Conversion modèle ↔ entité. |
+| ✅ `get_interventions_test.dart` | L2 | Filtre, recherche et tri. |
+| ✅ `intervention_mapper_test.dart` | L2 | Conversion modèle ↔ entité. |
+| ✅ `fake_intervention_repository_test.dart` | L2 | Chaque technicien ne voit que ses interventions ; statut, notes, photos et création. |
 | 🔲 `sync_service_test.dart` | L2 | La file est vidée en cas de succès, conservée en cas d'erreur réseau. |
 
 ---
@@ -288,3 +294,14 @@ Il réutilise les cas d'usage de `interventions` : pas de couches `data` ni `dom
 6. Photos et signature : sur le serveur de test, seuls les chemins de fichiers sont envoyés.
 7. Chaque technicien ne reçoit et ne garde que ses interventions. La base locale est vidée à la déconnexion, mais jamais tant que des éléments attendent d'être envoyés.
 8. L'interface montre l'état à tout moment : badge En ligne / Hors ligne, nombre d'éléments en attente, bouton Synchroniser.
+
+---
+
+## 6. Git : branches et fusion
+
+- Dépôt privé `fieldtask-pro`. `main` compile toujours.
+- Une branche par lot : `feature/lot1-auth-liste`, `feature/lot2-donnees-synchro`, `feature/lot3-fiche-carte`.
+- Chacun commit et pousse sur sa branche, puis ouvre une Pull Request vers `main` (midi et soir).
+- Pour récupérer le travail des autres : `git fetch origin` puis `git merge origin/main`.
+- Jamais de `git push --force`. Fichiers partagés (`pubspec.yaml`, `app.dart`, routeur) : modifiés par L1 uniquement.
+- Pour L1 : faire `ref.watch(syncServiceProvider)` une fois après la connexion, et ajouter l'intercepteur JWT dans `dio_client.dart`.

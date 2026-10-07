@@ -74,8 +74,18 @@ class SyncService {
           }
           await db.delete(AppDatabase.tableSyncQueue,
               where: 'id = ?', whereArgs: [id]);
-          await db.update(AppDatabase.tableInterventions, {'synced': 1},
-              where: 'id = ?', whereArgs: [entityId]);
+
+          // L'intervention n'est marquée "envoyée" que si plus aucune
+          // opération ne l'attend dans la file.
+          final remaining = Sqflite.firstIntValue(await db.rawQuery(
+                  'SELECT COUNT(*) FROM ${AppDatabase.tableSyncQueue} WHERE entity_id = ?',
+                  [entityId])) ??
+              0;
+          if (remaining == 0) {
+            await db.update(AppDatabase.tableInterventions, {'synced': 1},
+                where: 'id = ?', whereArgs: [entityId]);
+          }
+          _appDb.notifyChanged();
         } on DioException {
           await db.rawUpdate(
               'UPDATE ${AppDatabase.tableSyncQueue} SET retry_count = retry_count + 1 WHERE id = ?',
@@ -86,7 +96,9 @@ class SyncService {
       }
     } finally {
       _running = false;
-      _stateController.add(failed ? SyncState.error : SyncState.idle);
+      if (!_stateController.isClosed) {
+        _stateController.add(failed ? SyncState.error : SyncState.idle);
+      }
     }
   }
 }
