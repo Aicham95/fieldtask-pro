@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,6 +12,16 @@ class AppDatabase {
   static const tableSyncQueue = 'sync_queue';
 
   Database? _db;
+
+  final StreamController<void> _changes = StreamController<void>.broadcast();
+
+  /// Émet à chaque écriture. Les flux de lecture (liste, compteur
+  /// "n éléments en attente") se relancent à chaque émission.
+  Stream<void> get changes => _changes.stream;
+
+  void notifyChanged() {
+    if (!_changes.isClosed) _changes.add(null);
+  }
 
   Future<Database> get database async {
     return _db ??= await openDatabase(
@@ -26,6 +38,7 @@ class AppDatabase {
     final db = await database;
     await db.delete(tableInterventions);
     await db.delete(tableSyncQueue);
+    notifyChanged();
   }
 
   Future<void> _onCreate(Database db, int version) async {
