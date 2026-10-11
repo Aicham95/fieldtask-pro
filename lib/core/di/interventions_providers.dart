@@ -17,7 +17,7 @@ import '../sync/sync_provider.dart';
 /// true  = dépôt factice en mémoire (UI sans serveur, pour les Lots 1 et 3)
 /// false = vrai dépôt SQLite + synchro
 /// Lot 2 passera cette valeur à false quand tout est testé.
-const bool useFakeRepository = true;
+const bool useFakeRepository = false;
 
 /// Racine de composition : seul endroit où la couche data est branchée
 /// sur le domaine.

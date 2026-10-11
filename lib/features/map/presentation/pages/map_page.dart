@@ -64,8 +64,10 @@ class MapPage extends ConsumerWidget {
           // Hors ligne, les tuiles non mises en cache restent grises :
           // les pins, eux, viennent de SQLite et s'affichent toujours.
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
             userAgentPackageName: 'com.techfix.fieldtask_pro',
+            errorTileCallback: (tile, error, stack) =>
+                debugPrint('ERREUR TUILE : $error'),
           ),
           MarkerLayer(markers: markers),
         ],

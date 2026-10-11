@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FieldTaskApp extends StatelessWidget {
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
+
+class FieldTaskApp extends ConsumerWidget {
   const FieldTaskApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: remplacer par MaterialApp.router avec go_router
-    // (login -> liste -> detail -> carte).
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
       title: 'FieldTask Pro',
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-      home: const Scaffold(body: Center(child: Text('FieldTask Pro'))),
+      debugShowCheckedModeBanner: false,
+      theme: buildAppTheme(),
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }

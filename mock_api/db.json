@@ -2,17 +2,17 @@
   "users": [
     {
       "id": "1",
-      "email": "tech@techfix.com",
+      "email": "fanta@techfix.com",
       "password": "1234",
-      "name": "Diallo Sy",
+      "name": "Fanta Ndiongue",
       "team": "Équipe TechFix · Saint-Louis"
     },
     {
       "id": "2",
-      "email": "fatou@techfix.com",
+      "email": "bamba@techfix.com",
       "password": "1234",
-      "name": "Fatou Ndiaye",
-      "team": "Équipe TechFix · Saint-Louis"
+      "name": "Bamba Mboup",
+      "team": "Équipe TechFix · Kaolack"
     }
   ],
   "interventions": [
@@ -34,7 +34,10 @@
       "scheduledAt": "2026-10-06T09:30:00Z",
       "estimatedMinutes": 90,
       "notes": "",
-      "updatedAt": "2026-10-05T08:00:00Z"
+      "updatedAt": "2026-10-11T21:18:39.402117Z",
+      "photoPaths": [
+        "/data/user/0/com.example.fieldtask_pro/app_flutter/photo_1791753519386075.jpg"
+      ]
     },
     {
       "id": "i85",
@@ -88,13 +91,17 @@
       "equipment": "Système de climatisation",
       "instructions": "Nettoyer les filtres, contrôler le niveau de gaz et le condenseur.",
       "priority": 0,
-      "status": 1,
+      "status": 2,
       "latitude": 16.02,
       "longitude": -16.493,
       "scheduledAt": "2026-10-06T10:00:00Z",
       "estimatedMinutes": 60,
-      "notes": "",
-      "updatedAt": "2026-10-05T08:00:00Z"
+      "notes": "cette image est un test",
+      "updatedAt": "2026-10-11T20:45:04.266547Z",
+      "photoPaths": [
+        "/data/user/0/com.example.fieldtask_pro/app_flutter/photo_1791751465648544.jpg"
+      ],
+      "signaturePath": "/data/user/0/com.example.fieldtask_pro/app_flutter/signature_1791751498350499.png"
     },
     {
       "id": "i82",
@@ -175,6 +182,28 @@
       "estimatedMinutes": 90,
       "notes": "",
       "updatedAt": "2026-10-05T08:00:00Z"
+    },
+    {
+      "id": "ihn4gqz85of1puyef4",
+      "technicianId": "1",
+      "reference": "INT-2026-7695",
+      "title": "Remplacement disjoncteur principal",
+      "clientName": "Senelec",
+      "city": "Saint-Louis",
+      "address": "Saint-Louis",
+      "description": "Disjoncteur qui déclenche de façon répétée depuis 2 jours, provoquant des coupures intempestives",
+      "equipment": "Disjoncteur différentiel 63A",
+      "instructions": "",
+      "priority": 1,
+      "status": 0,
+      "latitude": 16.0326,
+      "longitude": -16.4818,
+      "scheduledAt": "2026-12-10T21:00:00.000Z",
+      "estimatedMinutes": 90,
+      "notes": "",
+      "photoPaths": [],
+      "signaturePath": null,
+      "updatedAt": "2026-10-11T21:38:27.695925Z"
     }
   ]
 }
