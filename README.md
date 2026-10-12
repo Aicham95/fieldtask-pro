@@ -297,7 +297,7 @@ Il réutilise les cas d'usage de `interventions` : pas de couches `data` ni `dom
 
 ---
 
-## 6. Git : branches et fusion
+## 6. Git 
 
 - Dépôt privé `fieldtask-pro`. `main` compile toujours.
 
