@@ -300,8 +300,4 @@ Il réutilise les cas d'usage de `interventions` : pas de couches `data` ni `dom
 ## 6. Git : branches et fusion
 
 - Dépôt privé `fieldtask-pro`. `main` compile toujours.
-- Une branche par lot : `feature/lot1-auth-liste`, `feature/lot2-donnees-synchro`, `feature/lot3-fiche-carte`.
-- Chacun commit et pousse sur sa branche, puis ouvre une Pull Request vers `main` (midi et soir).
-- Pour récupérer le travail des autres : `git fetch origin` puis `git merge origin/main`.
-- Jamais de `git push --force`. Fichiers partagés (`pubspec.yaml`, `app.dart`, routeur) : modifiés par L1 uniquement.
-- Pour L1 : faire `ref.watch(syncServiceProvider)` une fois après la connexion, et ajouter l'intercepteur JWT dans `dio_client.dart`.
+
